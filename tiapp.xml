@@ -7,7 +7,7 @@
         <target device="android">false</target>
         <target device="blackberry">false</target>
     </deployment-targets>
-    <sdk-version>2.1.4.GA</sdk-version>
+    <sdk-version>3.1.3.GA</sdk-version>
     <id>net.playcontrol.swigtestios</id>
     <name>SwigTestiOS</name>
     <version>1.0</version>
@@ -45,9 +45,7 @@
         </splash>
         <theme>default</theme>
     </mobileweb>
-
-<modules>
-  <module version="0.1">net.playcontrol.almixerswig</module>
-</modules>
-
+    <modules>
+        <module platform="iphone" version="0.1">co.lanica.almixer</module>
+    </modules>
 </ti:app>

@@ -1,5 +1,5 @@
 
-var almixerproxy = require('net.playcontrol.almixerswig');
+var almixerproxy = require('co.lanica.almixer');
 
 var s_JSALmixerDataChannelTable = {}
 
@@ -46,6 +46,8 @@ almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',
 
 function JSALmixerPlaySound(sound_handle, options_table)
 {
+	  Ti.API.info("JSALmixerPlaySound called ");
+
 	var which_channel = -1;
 	var num_loops = 0;
 	var duration = -1;
@@ -70,6 +72,7 @@ function JSALmixerPlaySound(sound_handle, options_table)
 		}
 		
 	}
+//	  Ti.API.info("PlayChannelTimed call on channel:" + which_channel + " sound_handle:" + sound_handle);
 
 	var playing_channel = ALmixer.PlayChannelTimed(which_channel, sound_handle, num_loops, duration);
 	// Do only if playing succeeded
@@ -91,6 +94,8 @@ function JSALmixerPlaySound(sound_handle, options_table)
 		// This table structure will let us also keep around their callback.
 		s_JSALmixerDataChannelTable[playing_channel] = { soundHandle:sound_handle, onComplete:options_table.onComplete };
 	}
+//		  Ti.API.info("PlayChannelTimed playing on channel:" + playing_channel);
+
 	return playing_channel;
 
 }

@@ -44,8 +44,15 @@ if (Ti.version < 1.8 ) {
 	}
 	
 	
-var almixerproxy = require('net.playcontrol.almixerswig');
+var almixerproxy = require('co.lanica.almixer');
 Ti.API.info("module is => "+almixerproxy);
+
+// Note: Our module code calls Init for us. But maybe we want to give the user more control since this is where they setup the frequency.
+var init_flag = ALmixer.Init(0,0,0);
+// I don't think Ti print commands understand how to handle type 'char' because the return value keeps coming up blank.
+//	  Ti.API.info("init_flag is " + init_flag + ".\n");
+
+
 Ti.include('ALmixer_Initialize.js');
 /*
 almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
@@ -56,15 +63,22 @@ almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
   Ti.API.info("completed is "+e.completed);
 });
 */
-//ALmixer.Init(0,0,0);
 var resource_dir = Ti.Filesystem.resourcesDirectory;
+Ti.API.info("resource_dir is => "+resource_dir);
+
 //var resource_dir = Ti.Filesystem.resourcesDirectory + Ti.Filesystem.separator;
+// Originally, I was getting a file://localhost/ at the beginning of the directory. 
+// This is a problem because ALmixer needs file paths compatible with the typical fopen type family.
 resource_dir = resource_dir.replace(/^file:\/\/localhost/g,'');
+// Later, Titanium started giving me URLs like file:// without the localhost. So this is a fallback string replacement.
+resource_dir = resource_dir.replace(/^file:\/\//g,'');
+// Replace %20 with spaces.
 resource_dir = resource_dir.replace(/%20/g,' ');
 
 var full_file_path = resource_dir + "pew-pew-lei.wav";
 Ti.API.info("full_file_path is => "+full_file_path);
 
+// A nice convenience function would be to automatically try looking in the Resource directory if the user did not provide an absolute path.
 var sound_handle_pew = ALmixer.LoadAll(full_file_path, 0);
 //var channel = ALmixer.PlayChannelTimed(-1, sound_handle, 0, -1);
 var sound_handle_note = ALmixer.LoadAll(resource_dir + "note2_aac.aac", 0);
