@@ -10,7 +10,6 @@
  */
 
 
-
 //bootstrap and check dependencies
 if (Ti.version < 1.8 ) {
 	alert('Sorry - this application template requires Titanium Mobile SDK 1.8 or later');	  	
@@ -42,18 +41,27 @@ if (Ti.version < 1.8 ) {
 			Window = require('ui/handheld/ApplicationWindow');
 		}
 	}
-	
-	
-var almixerproxy = require('co.lanica.almixer');
-Ti.API.info("module is => "+almixerproxy);
 
+
+var platino = require('co.lanica.platino');
+//var almixerproxy = require('co.lanica.almixer');
+var ALmixer = platino.require('co.lanica.almixer');
+//Ti.API.info("module is => "+almixerproxy);
+//platino.require('co.lanica.almixer');
+Ti.API.info("module is => "+ALmixer);
+
+
+//almixerproxy.require("co.lanica.almixer");
+Ti.API.info("done calling my-require ");
 // Note: Our module code calls Init for us. But maybe we want to give the user more control since this is where they setup the frequency.
 var init_flag = ALmixer.Init(0,0,0);
 // I don't think Ti print commands understand how to handle type 'char' because the return value keeps coming up blank.
-//	  Ti.API.info("init_flag is " + init_flag + ".\n");
+	  Ti.API.info("init_flag is " + init_flag + ".\n");
 
 
-Ti.include('ALmixer_Initialize.js');
+var ALmixer = platino.require('co.lanica.almixer');
+
+//Ti.include('ALmixer_Initialize.js');
 /*
 almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
   Ti.API.info("name is "+e.name);
@@ -99,7 +107,7 @@ var music_channel = ALmixer.Play(music_handle, options_table);
 options_table.loops = 1;
 //var note_channel = ALmixer.Play(sound_handle_note, options_table);
 options_table.loops = 4;
-var pew_channel = ALmixer.Play(sound_handle_pew, options_table);
+
 /*
 music_handle = null;
 ALmixer.FreeData(sound_handle_note);
@@ -177,7 +185,7 @@ var window1 = Titanium.UI.createWindow({
 	
 	var music_button = Ti.UI.createButton({
 //	backgroundImage:'blue.png',
-	title:'Music Pause',
+	title:'Pause-Music',
 //	width:90,
 //	height:35,
 //	right:12,

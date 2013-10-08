@@ -47,5 +47,7 @@
     </mobileweb>
     <modules>
         <module platform="iphone" version="0.1">co.lanica.almixer</module>
+        <module platform="android">co.lanica.platino</module>
+        <module platform="iphone">co.lanica.platino</module>
     </modules>
 </ti:app>
