@@ -54,7 +54,7 @@ Ti.API.info("module is => "+ALmixer);
 //almixerproxy.require("co.lanica.almixer");
 Ti.API.info("done calling my-require ");
 // Note: Our module code calls Init for us. But maybe we want to give the user more control since this is where they setup the frequency.
-var init_flag = ALmixer.Init(0,0,0);
+var init_flag = ALmixer.Init(0,32,0);
 // I don't think Ti print commands understand how to handle type 'char' because the return value keeps coming up blank.
 	  Ti.API.info("init_flag is " + init_flag + ".\n");
 
@@ -67,7 +67,7 @@ almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
   Ti.API.info("name is "+e.name);
 //  Ti.API.info("handle is "+e.handle);
   Ti.API.info("channel is "+e.channel);
-  Ti.API.info("source is "+e.source);
+  Ti.API.info("source is "+e.alsource);
   Ti.API.info("completed is "+e.completed);
 });
 */
@@ -97,13 +97,14 @@ var options_table = { onComplete:function(e) {
 	  Ti.API.info("name is "+e.name);
 //  Ti.API.info("handle is "+e.handle);
   Ti.API.info("channel is "+e.channel);
-  Ti.API.info("source is "+e.source);
+  Ti.API.info("source is "+e.alsource);
   Ti.API.info("completed is "+e.completed);
 	
 }
 };
 options_table.loops = -1;
-var music_channel = ALmixer.Play(music_handle, options_table);
+//var music_channel = ALmixer.util.Play(music_handle, options_table);
+var music_channel = ALmixer.PlayChannel(-1, music_handle, -1);
 options_table.loops = 1;
 //var note_channel = ALmixer.Play(sound_handle_note, options_table);
 options_table.loops = 4;
@@ -132,7 +133,7 @@ sound_handle_pew = null;
 
 	note_button.addEventListener('click', function(event)
 	{
-		var note_channel = ALmixer.Play(sound_handle_note,
+		var note_channel = ALmixer.util.Play(sound_handle_note,
 		{
 			loops:0,
 			onComplete:function(e)
@@ -140,7 +141,7 @@ sound_handle_pew = null;
 			 	Ti.API.info("completed_note is "+e.name);
 			 	Ti.API.info("name is "+e.name);
 				Ti.API.info("channel is "+e.channel);
-				Ti.API.info("source is "+e.source);
+				Ti.API.info("source is "+e.alsource);
 				Ti.API.info("completed is "+e.completed);
 			},
 		});
@@ -167,7 +168,7 @@ var window1 = Titanium.UI.createWindow({
 
 	pew_button.addEventListener('click', function(event)
 	{
-		var pew_channel = ALmixer.Play(sound_handle_pew,
+		var pew_channel = ALmixer.util.Play(sound_handle_pew,
 		{
 			loops:2,
 			onComplete:function(e)
@@ -175,7 +176,7 @@ var window1 = Titanium.UI.createWindow({
 			 	Ti.API.info("completed pew is "+e.name);
 			 	Ti.API.info("name is "+e.name);
 				Ti.API.info("channel is "+e.channel);
-				Ti.API.info("source is "+e.source);
+				Ti.API.info("source is "+e.alsource);
 				Ti.API.info("completed is "+e.completed);
 			},
 		});
@@ -226,7 +227,6 @@ volume_slider.addEventListener('change',function(e)
 {
 	ALmixer.SetMasterVolume(e.value);
 });
-
 
 
 
