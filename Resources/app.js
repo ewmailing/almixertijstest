@@ -59,7 +59,7 @@ var init_flag = ALmixer.Init(0,32,0);
 	  Ti.API.info("init_flag is " + init_flag + ".\n");
 
 
-var ALmixer = platino.require('co.lanica.almixer');
+//var ALmixer = platino.require('co.lanica.almixer');
 
 
 
