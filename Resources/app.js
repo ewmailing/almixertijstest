@@ -61,6 +61,8 @@ var init_flag = ALmixer.Init(0,32,0);
 
 var ALmixer = platino.require('co.lanica.almixer');
 
+
+
 //Ti.include('ALmixer_Initialize.js');
 /*
 almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
@@ -71,17 +73,26 @@ almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
   Ti.API.info("completed is "+e.completed);
 });
 */
-var resource_dir = Ti.Filesystem.resourcesDirectory;
-Ti.API.info("resource_dir is => "+resource_dir);
 
-//var resource_dir = Ti.Filesystem.resourcesDirectory + Ti.Filesystem.separator;
-// Originally, I was getting a file://localhost/ at the beginning of the directory. 
-// This is a problem because ALmixer needs file paths compatible with the typical fopen type family.
-resource_dir = resource_dir.replace(/^file:\/\/localhost/g,'');
-// Later, Titanium started giving me URLs like file:// without the localhost. So this is a fallback string replacement.
-resource_dir = resource_dir.replace(/^file:\/\//g,'');
-// Replace %20 with spaces.
-resource_dir = resource_dir.replace(/%20/g,' ');
+var resource_dir;
+if (Ti.Platform.osname == 'android')
+{
+	resource_dir = "Resources/";
+}
+else
+{
+	resource_dir = Ti.Filesystem.resourcesDirectory;
+	Ti.API.info("resource_dir is => "+resource_dir);
+
+	//var resource_dir = Ti.Filesystem.resourcesDirectory + Ti.Filesystem.separator;
+	// Originally, I was getting a file://localhost/ at the beginning of the directory. 
+	// This is a problem because ALmixer needs file paths compatible with the typical fopen type family.
+	resource_dir = resource_dir.replace(/^file:\/\/localhost/g,'');
+	// Later, Titanium started giving me URLs like file:// without the localhost. So this is a fallback string replacement.
+	resource_dir = resource_dir.replace(/^file:\/\//g,'');
+	// Replace %20 with spaces.
+	resource_dir = resource_dir.replace(/%20/g,' ');
+}
 
 var full_file_path = resource_dir + "pew-pew-lei.wav";
 Ti.API.info("full_file_path is => "+full_file_path);
@@ -91,7 +102,7 @@ var sound_handle_pew = ALmixer.LoadAll(full_file_path, 0);
 //var channel = ALmixer.PlayChannelTimed(-1, sound_handle, 0, -1);
 var sound_handle_note = ALmixer.LoadAll(resource_dir + "note2_aac.aac", 0);
 var music_handle = ALmixer.LoadStream(resource_dir + "background-music-aac.wav", 0, 0, 0, 0, 0);
-	
+
 //	Ti.API.info("channel is => "+channel);
 var options_table = { onComplete:function(e) {
 	  Ti.API.info("name is "+e.name);
@@ -104,7 +115,16 @@ var options_table = { onComplete:function(e) {
 };
 options_table.loops = -1;
 //var music_channel = ALmixer.util.Play(music_handle, options_table);
-var music_channel = ALmixer.PlayChannel(-1, music_handle, -1);
+
+// This will omit one channel (channel #0) from the automatic channel assignment mechanism so it is always available.
+// I will use this reserved channel for music. 
+// This is typical because you generally always want to make sure you have a free channel for music (since people will notice missing music more than any other missing sound effect),
+// and it also makes it easier because you can directly refer to the channel number instead of using a variable (if you choose). This can be useful for global user preferences such as having different volumes for music and sound effects.
+ALmixer.ReserveChannels(1);
+// This says play the music on channel 0, and loop infinitely (-1)
+var music_channel = ALmixer.PlayChannel(0, music_handle, -1);
+//var music_channel = ALmixer.PlayChannelTimed(-1, music_handle, -1, -1);
+//var music_channel = ALmixer.PlayChannel(music_handle, -1);
 options_table.loops = 1;
 //var note_channel = ALmixer.Play(sound_handle_note, options_table);
 options_table.loops = 4;
@@ -133,19 +153,17 @@ sound_handle_pew = null;
 
 	note_button.addEventListener('click', function(event)
 	{
-		var note_channel = ALmixer.util.Play(sound_handle_note,
-		{
-			loops:0,
-			onComplete:function(e)
+		// PlayChannel allows you to omit the channel (-1) and num_loops (0).
+		var note_channel = ALmixer.PlayChannel(sound_handle_note, 
+			function(e)
 			{
-			 	Ti.API.info("completed_note is "+e.name);
+			 	Ti.API.info("completed pew is "+e.name);
 			 	Ti.API.info("name is "+e.name);
 				Ti.API.info("channel is "+e.channel);
 				Ti.API.info("source is "+e.alsource);
-				Ti.API.info("completed is "+e.completed);
-			},
-		});
-
+				Ti.API.info("finishedNaturally is "+e.finishedNaturally);
+			}
+		);
 	}); 
 /*
 var window1 = Titanium.UI.createWindow({
@@ -168,21 +186,22 @@ var window1 = Titanium.UI.createWindow({
 
 	pew_button.addEventListener('click', function(event)
 	{
+		// Alternatively, if you prefer named parameters,
+		// the ALmixer.util library provides this convenience function for this style.
 		var pew_channel = ALmixer.util.Play(sound_handle_pew,
 		{
 			loops:2,
 			onComplete:function(e)
 			{
-			 	Ti.API.info("completed pew is "+e.name);
+			 	Ti.API.info("completed_note is "+e.name);
 			 	Ti.API.info("name is "+e.name);
 				Ti.API.info("channel is "+e.channel);
 				Ti.API.info("source is "+e.alsource);
-				Ti.API.info("completed is "+e.completed);
+				Ti.API.info("finishedNaturally is "+e.finishedNaturally);
+
 			},
 		});
-
-	}); 
-	
+	});
 	
 	var music_button = Ti.UI.createButton({
 //	backgroundImage:'blue.png',
