@@ -74,10 +74,14 @@ almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
 });
 */
 
+
+
+/*
 var resource_dir;
 if (Ti.Platform.osname == 'android')
 {
 	resource_dir = "Resources/";
+
 }
 else
 {
@@ -93,15 +97,19 @@ else
 	// Replace %20 with spaces.
 	resource_dir = resource_dir.replace(/%20/g,' ');
 }
-
-var full_file_path = resource_dir + "pew-pew-lei.wav";
-Ti.API.info("full_file_path is => "+full_file_path);
+*/
+//var full_file_path = resource_dir + "pew-pew-lei.wav";
+//Ti.API.info("full_file_path is => "+full_file_path);
 
 // A nice convenience function would be to automatically try looking in the Resource directory if the user did not provide an absolute path.
+/*
 var sound_handle_pew = ALmixer.LoadAll(full_file_path, 0);
-//var channel = ALmixer.PlayChannelTimed(-1, sound_handle, 0, -1);
 var sound_handle_note = ALmixer.LoadAll(resource_dir + "note2_aac.aac", 0);
 var music_handle = ALmixer.LoadStream(resource_dir + "background-music-aac.wav", 0, 0, 0, 0, 0);
+*/
+var sound_handle_pew = ALmixer.LoadAll("pew-pew-lei.wav");
+var sound_handle_note = ALmixer.LoadAll("note2_aac.aac");
+var music_handle = ALmixer.LoadStream("background-music-aac.wav");
 
 //	Ti.API.info("channel is => "+channel);
 var options_table = { onComplete:function(e) {
@@ -255,5 +263,41 @@ win.add(pew_button);
 win.add(music_button);
 win.add(volume_slider);
 win.open();
+
+if (Ti.Platform.osname == 'android')
+{
+Titanium.Android.currentActivity.addEventListener('pause', 
+	function()
+	{
+ 		ALmixer.BeginInterruption();
+	}
+);
+
+Titanium.Android.currentActivity.addEventListener('resume', 
+	function()
+	{
+		ALmixer.EndInterruption();
+	}
+);
+}
+else
+{
+	Titanium.App.addEventListener('pause', 
+	function()
+	{
+ 		ALmixer.BeginInterruption();
+	}
+);
+
+Titanium.App.addEventListener('resume', 
+	function()
+	{
+		ALmixer.EndInterruption();
+	}
+);
+
+
+}
+
 
 })();
