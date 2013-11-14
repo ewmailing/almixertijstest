@@ -244,7 +244,7 @@ var window1 = Titanium.UI.createWindow({
     max:1.0,
     value:1.0,
     width:268,
-    height:11,
+    height:30,
     top:90,
  //   leftTrackImage:'../images/slider_orangebar.png',
  //   rightTrackImage:'../images/slider_lightbar.png',
@@ -253,6 +253,46 @@ var window1 = Titanium.UI.createWindow({
 volume_slider.addEventListener('change',function(e)
 {
 	ALmixer.SetMasterVolume(e.value);
+	
+});
+
+	var pitch_slider = Titanium.UI.createSlider({
+    min:.25,
+    max:2.0,
+    value:1.0,
+    width:268,
+    height:30,
+    top:130,
+ //   leftTrackImage:'../images/slider_orangebar.png',
+ //   rightTrackImage:'../images/slider_lightbar.png',
+ //   thumbImage:'../images/slider_thumb.png'
+});
+pitch_slider.addEventListener('change',function(e)
+{
+	//ALmixer.SetMasterVolume(e.value);
+	var ret_array = {};
+	var ret_val = 0;
+	var alsource = ALmixer.GetSource(0);
+	var ret_val1 = {};
+	var ret_val2 = {};
+	var ret_val3 = {};
+
+	ALmixer.alGetSourcef(alsource, ALmixer.AL_PITCH, ret_val1);
+  Ti.API.info("old pitch "+ ret_val1[0]);
+
+	ALmixer.alSourcef(alsource, ALmixer.AL_PITCH, e.value);
+
+	ALmixer.alGetSourcef(alsource, ALmixer.AL_PITCH, ret_val2);
+  Ti.API.info("new pitch "+ ret_val2[0]);
+
+	ALmixer.alGetSource3f(alsource, ALmixer.AL_POSITION, ret_val1, ret_val2, ret_val3);
+  //Ti.API.info("position  "+ ret_array[0] + ", " +  ret_array[1] + ", " +  ret_array[2]);
+  Ti.API.info("alGetSource3f position  "+ ret_val1[0] + ", " +  ret_val2[0] + ", " +  ret_val3[0]);
+	
+	ALmixer.alGetSourcefv(alsource, ALmixer.AL_POSITION, ret_array);
+  Ti.API.info("alGetSource3fv position  "+ ret_array[0] + ", " +  ret_array[1] + ", " +  ret_array[2]);
+
+  
 });
 
 
@@ -262,6 +302,7 @@ win.add(note_button);
 win.add(pew_button);
 win.add(music_button);
 win.add(volume_slider);
+win.add(pitch_slider);
 win.open();
 
 if (Ti.Platform.osname == 'android')
