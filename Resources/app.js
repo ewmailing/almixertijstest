@@ -43,107 +43,33 @@ if (Ti.version < 1.8 ) {
 	}
 
 
-var platino = require('co.lanica.platino');
-//var almixerproxy = require('co.lanica.almixer');
-var ALmixer = platino.require('co.lanica.almixer');
-//Ti.API.info("module is => "+almixerproxy);
-//platino.require('co.lanica.almixer');
-Ti.API.info("module is => "+ALmixer);
+	var platino = require('co.lanica.platino');
+	// Use platino.require(), not regular require(), to load ALmixer. (platino.require has extra magic)
+	var ALmixer = platino.require('co.lanica.almixer');
+
+	// First parameter is a requested frequency like 11025, 22050, or 44100.
+	// Second parameter is the max number of channels. 32 is the best number.
+	// Third paramter is mostly useless for the existing platforms.
+	// Pass 0 to use defaults.
+	var init_flag = ALmixer.Init(0,0,0);
+	// Should be true
+	Ti.API.info("init_flag is " + init_flag + ".\n");
 
 
-//almixerproxy.require("co.lanica.almixer");
-Ti.API.info("done calling my-require ");
-// Note: Our module code calls Init for us. But maybe we want to give the user more control since this is where they setup the frequency.
-var init_flag = ALmixer.Init(0,32,0);
-// I don't think Ti print commands understand how to handle type 'char' because the return value keeps coming up blank.
-	  Ti.API.info("init_flag is " + init_flag + ".\n");
+	// Files are assumed to be in the Resources directory of your project.
+	// If you need to specify outside file locations, provide absolute paths starting with '/'
+	var sound_handle_pew = ALmixer.LoadAll("pew-pew-lei.wav");
+	var sound_handle_note = ALmixer.LoadAll("notes_aac.aac");
+	var music_handle = ALmixer.LoadStream("background-music-aac.m4a");
 
+	// This will omit one channel (channel #0) from the automatic channel assignment mechanism so it is always available.
+	// I will use this reserved channel for music. 
+	// This is typical because you generally always want to make sure you have a free channel for music (since people will notice missing music more than any other missing sound effect),
+	// and it also makes it easier because you can directly refer to the channel number instead of using a variable (if you choose). This can be useful for global user preferences such as having different volumes for music and sound effects.
+	ALmixer.ReserveChannels(1);
+	// This says play the music on channel 0, and loop infinitely (-1)
+	var music_channel = ALmixer.PlayChannel(0, music_handle, -1);
 
-//var ALmixer = platino.require('co.lanica.almixer');
-
-
-
-//Ti.include('ALmixer_Initialize.js');
-/*
-almixerproxy.addEventListener('ALmixerSoundPlaybackFinished',function(e){
-  Ti.API.info("name is "+e.name);
-//  Ti.API.info("handle is "+e.handle);
-  Ti.API.info("channel is "+e.channel);
-  Ti.API.info("source is "+e.alsource);
-  Ti.API.info("completed is "+e.completed);
-});
-*/
-
-
-
-/*
-var resource_dir;
-if (Ti.Platform.osname == 'android')
-{
-	resource_dir = "Resources/";
-
-}
-else
-{
-	resource_dir = Ti.Filesystem.resourcesDirectory;
-	Ti.API.info("resource_dir is => "+resource_dir);
-
-	//var resource_dir = Ti.Filesystem.resourcesDirectory + Ti.Filesystem.separator;
-	// Originally, I was getting a file://localhost/ at the beginning of the directory. 
-	// This is a problem because ALmixer needs file paths compatible with the typical fopen type family.
-	resource_dir = resource_dir.replace(/^file:\/\/localhost/g,'');
-	// Later, Titanium started giving me URLs like file:// without the localhost. So this is a fallback string replacement.
-	resource_dir = resource_dir.replace(/^file:\/\//g,'');
-	// Replace %20 with spaces.
-	resource_dir = resource_dir.replace(/%20/g,' ');
-}
-*/
-//var full_file_path = resource_dir + "pew-pew-lei.wav";
-//Ti.API.info("full_file_path is => "+full_file_path);
-
-// A nice convenience function would be to automatically try looking in the Resource directory if the user did not provide an absolute path.
-/*
-var sound_handle_pew = ALmixer.LoadAll(full_file_path, 0);
-var sound_handle_note = ALmixer.LoadAll(resource_dir + "note2_aac.aac", 0);
-var music_handle = ALmixer.LoadStream(resource_dir + "background-music-aac.wav", 0, 0, 0, 0, 0);
-*/
-var sound_handle_pew = ALmixer.LoadAll("pew-pew-lei.wav");
-var sound_handle_note = ALmixer.LoadAll("note2_aac.aac");
-var music_handle = ALmixer.LoadStream("background-music-aac.wav");
-
-//	Ti.API.info("channel is => "+channel);
-var options_table = { onComplete:function(e) {
-	  Ti.API.info("name is "+e.name);
-//  Ti.API.info("handle is "+e.handle);
-  Ti.API.info("channel is "+e.channel);
-  Ti.API.info("source is "+e.alsource);
-  Ti.API.info("completed is "+e.completed);
-	
-}
-};
-options_table.loops = -1;
-//var music_channel = ALmixer.util.Play(music_handle, options_table);
-
-// This will omit one channel (channel #0) from the automatic channel assignment mechanism so it is always available.
-// I will use this reserved channel for music. 
-// This is typical because you generally always want to make sure you have a free channel for music (since people will notice missing music more than any other missing sound effect),
-// and it also makes it easier because you can directly refer to the channel number instead of using a variable (if you choose). This can be useful for global user preferences such as having different volumes for music and sound effects.
-ALmixer.ReserveChannels(1);
-// This says play the music on channel 0, and loop infinitely (-1)
-var music_channel = ALmixer.PlayChannel(0, music_handle, -1);
-//var music_channel = ALmixer.PlayChannelTimed(-1, music_handle, -1, -1);
-//var music_channel = ALmixer.PlayChannel(music_handle, -1);
-options_table.loops = 1;
-//var note_channel = ALmixer.Play(sound_handle_note, options_table);
-options_table.loops = 4;
-
-/*
-music_handle = null;
-ALmixer.FreeData(sound_handle_note);
-sound_handle_note = null;
-sound_handle_pew = null;
-*/
-//	var ret_win = new Window().open();
 	var win = Window();
 
 	var note_button = Ti.UI.createButton({
@@ -173,11 +99,6 @@ sound_handle_pew = null;
 			}
 		);
 	}); 
-/*
-var window1 = Titanium.UI.createWindow({
-    
-})
-*/
 
 	var pew_button = Ti.UI.createButton({
 //	backgroundImage:'blue.png',
@@ -269,7 +190,6 @@ volume_slider.addEventListener('change',function(e)
 });
 pitch_slider.addEventListener('change',function(e)
 {
-	//ALmixer.SetMasterVolume(e.value);
 	var ret_array = [];
 	var ret_val = 0;
 	var alsource = ALmixer.GetSource(0);
@@ -277,27 +197,30 @@ pitch_slider.addEventListener('change',function(e)
 	var ret_val2 = [];
 	var ret_val3 = [];
 
+	// For OpenAL functions that pass arrays,
+	// you must pass in a Javascript array instead.
 	ALmixer.alGetSourcef(alsource, ALmixer.AL_PITCH, ret_val1);
-  Ti.API.info("old pitch "+ ret_val1[0]);
+	Ti.API.info("old pitch "+ ret_val1[0]);
 
 	ALmixer.alSourcef(alsource, ALmixer.AL_PITCH, e.value);
 
 	ALmixer.alGetSourcef(alsource, ALmixer.AL_PITCH, ret_val2);
-  Ti.API.info("new pitch "+ ret_val2[0]);
+	Ti.API.info("new pitch "+ ret_val2[0]);
 
+  	// The 3f version is kind of lame because you have to pass 3 arrays
+	// and then access the [0] element for each array.
+	// You can use the fv version as an alternative. The fv version is nicer in my opinion.
 	ALmixer.alGetSource3f(alsource, ALmixer.AL_POSITION, ret_val1, ret_val2, ret_val3);
-  //Ti.API.info("position  "+ ret_array[0] + ", " +  ret_array[1] + ", " +  ret_array[2]);
-  Ti.API.info("alGetSource3f position  "+ ret_val1[0] + ", " +  ret_val2[0] + ", " +  ret_val3[0]);
+	Ti.API.info("alGetSource3f position  "+ ret_val1[0] + ", " +  ret_val2[0] + ", " +  ret_val3[0]);
 	
+	// I think this fv is nicer than the 3f version
 	ALmixer.alGetSourcefv(alsource, ALmixer.AL_POSITION, ret_array);
-  Ti.API.info("alGetSourcefv position  "+ ret_array[0] + ", " +  ret_array[1] + ", " +  ret_array[2]);
-
+	Ti.API.info("alGetSourcefv position  "+ ret_array[0] + ", " +  ret_array[1] + ", " +  ret_array[2]);
   
 });
 
 
 
-//var curr_win = Ti.UI.currentWindow;
 win.add(note_button);
 win.add(pew_button);
 win.add(music_button);
@@ -305,49 +228,53 @@ win.add(volume_slider);
 win.add(pitch_slider);
 win.open();
 
+
+
+/* You should copy all the event handlers below into your app. 
+ * It makes sure that when an app is paused, the audio pauses, and when resumed, audio is resumed.
+ * Additionally, when Android exits an app, it calls ALmixer_Quit() which is necessary to make sure
+ * the audio system is properly cleaned up, or there could be problems on the next launch.
+ */
 if (Ti.Platform.osname == 'android')
 {
-Titanium.Android.currentActivity.addEventListener('pause', 
-	function()
-	{
- 		ALmixer.BeginInterruption();
-	}
-);
+	Titanium.Android.currentActivity.addEventListener('pause', 
+		function()
+		{
+ 			ALmixer.BeginInterruption();
+		}
+	);
 
-Titanium.Android.currentActivity.addEventListener('resume', 
-	function()
-	{
-		ALmixer.EndInterruption();
-	}
-);
+	Titanium.Android.currentActivity.addEventListener('resume', 
+		function()
+		{
+			ALmixer.EndInterruption();
+		}
+	);
 
-Titanium.Android.currentActivity.addEventListener('destroy', 
-	function()
-	{
-		Ti.API.info("exit called");
-		ALmixer.Quit();
-	}
-);
+	Titanium.Android.currentActivity.addEventListener('destroy', 
+		function()
+		{
+			Ti.API.info("exit called");
+			ALmixer.Quit();
+		}
+	);
 
 }
 else
 {
 	Titanium.App.addEventListener('pause', 
-	function()
-	{
- 		ALmixer.BeginInterruption();
-	}
-);
+		function()
+		{
+	 		ALmixer.BeginInterruption();
+		}
+	);
 
-Titanium.App.addEventListener('resume', 
-	function()
-	{
-		ALmixer.EndInterruption();
-	}
-);
-
-
+	Titanium.App.addEventListener('resume', 
+		function()
+		{
+			ALmixer.EndInterruption();
+		}
+	);
 }
-
 
 })();
