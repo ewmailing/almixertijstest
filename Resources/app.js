@@ -270,12 +270,12 @@ volume_slider.addEventListener('change',function(e)
 pitch_slider.addEventListener('change',function(e)
 {
 	//ALmixer.SetMasterVolume(e.value);
-	var ret_array = {};
+	var ret_array = [];
 	var ret_val = 0;
 	var alsource = ALmixer.GetSource(0);
-	var ret_val1 = {};
-	var ret_val2 = {};
-	var ret_val3 = {};
+	var ret_val1 = [];
+	var ret_val2 = [];
+	var ret_val3 = [];
 
 	ALmixer.alGetSourcef(alsource, ALmixer.AL_PITCH, ret_val1);
   Ti.API.info("old pitch "+ ret_val1[0]);
@@ -290,7 +290,7 @@ pitch_slider.addEventListener('change',function(e)
   Ti.API.info("alGetSource3f position  "+ ret_val1[0] + ", " +  ret_val2[0] + ", " +  ret_val3[0]);
 	
 	ALmixer.alGetSourcefv(alsource, ALmixer.AL_POSITION, ret_array);
-  Ti.API.info("alGetSource3fv position  "+ ret_array[0] + ", " +  ret_array[1] + ", " +  ret_array[2]);
+  Ti.API.info("alGetSourcefv position  "+ ret_array[0] + ", " +  ret_array[1] + ", " +  ret_array[2]);
 
   
 });
@@ -320,6 +320,15 @@ Titanium.Android.currentActivity.addEventListener('resume',
 		ALmixer.EndInterruption();
 	}
 );
+
+Titanium.Android.currentActivity.addEventListener('destroy', 
+	function()
+	{
+		Ti.API.info("exit called");
+		ALmixer.Quit();
+	}
+);
+
 }
 else
 {
