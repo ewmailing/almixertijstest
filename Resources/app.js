@@ -79,8 +79,8 @@ if (Ti.version < 1.8 ) {
 //	height:35,
 //	right:12,
 //	bottom:10,
-	top:44,
-	left:4,
+	top:80,
+	left:10,
 //	font:{fontFamily:'Arial',fontWeight:'bold',fontSize:14},
 //	opacity:0
 	});
@@ -107,8 +107,8 @@ if (Ti.version < 1.8 ) {
 //	height:35,
 //	right:12,
 //	bottom:10,
-	top:44,
-	left:64,
+	top:80,
+	left:100,
 //	font:{fontFamily:'Arial',fontWeight:'bold',fontSize:14},
 //	opacity:0
 	});
@@ -139,8 +139,8 @@ if (Ti.version < 1.8 ) {
 //	height:35,
 //	right:12,
 //	bottom:10,
-	top:4,
-	left:4,
+	top:10,
+	left:10,
 //	font:{fontFamily:'Arial',fontWeight:'bold',fontSize:14},
 //	opacity:0
 	});
@@ -164,9 +164,10 @@ if (Ti.version < 1.8 ) {
     min:0,
     max:1.0,
     value:1.0,
-    width:268,
-    height:30,
-    top:90,
+    width:'80%',
+    height:'auto',
+    top:160,
+	text:"Master (Listener) Volume",
  //   leftTrackImage:'../images/slider_orangebar.png',
  //   rightTrackImage:'../images/slider_lightbar.png',
  //   thumbImage:'../images/slider_thumb.png'
@@ -181,9 +182,10 @@ volume_slider.addEventListener('change',function(e)
     min:.25,
     max:2.0,
     value:1.0,
-    width:268,
-    height:30,
-    top:130,
+    width:'80%',
+    height:'auto',
+    top:280,
+	text:"Pitch",
  //   leftTrackImage:'../images/slider_orangebar.png',
  //   rightTrackImage:'../images/slider_lightbar.png',
  //   thumbImage:'../images/slider_thumb.png'

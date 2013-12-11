@@ -40,6 +40,22 @@
 		<tool-api-level>19</tool-api-level>
 		<manifest>
 			<uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
+			<application>
+ 
+		<!-- TI_APPLICATION -->
+ 
+		<activity android:configChanges="keyboardHidden|orientation|screenSize" android:name=".AlmixertijstestActivity" android:theme="@android:style/Theme.Holo.Light">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+		</activity>
+ 
+		
+>
+		
+ 
+	</application>
 		</manifest>
 	</android>
     <mobileweb>
