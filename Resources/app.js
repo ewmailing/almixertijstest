@@ -228,11 +228,10 @@ win.add(pew_button);
 win.add(music_button);
 win.add(volume_slider);
 win.add(pitch_slider);
-win.open();
 
 /* It is recommended that you setup the remaining event listeners for the window after 
  * it is opened on Android, so wait for it to open via event listener,
- * otherwise window.getActivity returns null.
+ * otherwise window.getActivity may return null on Android or the wrong activity.
  * Also note that the window MUST be a heavyweight window (e.g. using fullscreen or navbar settings)
  * otherwise, there will be no event listener callbacks. (Lightweight windows are gone as of Ti 3.2.0.GA)
  */
@@ -242,6 +241,7 @@ win.addEventListener('open',
 		SetupApplicationLifeCycleHandlers(win);
 	}
 );
+win.open();
 
 
 /* You should copy all the event handlers below into your app. 
