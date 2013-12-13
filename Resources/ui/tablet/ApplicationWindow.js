@@ -5,7 +5,13 @@ function ApplicationWindow() {
 		
 	//create component instance
 	var self = Ti.UI.createWindow({
-		backgroundColor:'#ffffff'
+		backgroundColor:'#ffffff',
+		orientationModes: [
+		Ti.UI.PORTRAIT,
+		Ti.UI.UPSIDE_PORTRAIT,
+		Ti.UI.LANDSCAPE_LEFT,
+		Ti.UI.LANDSCAPE_RIGHT
+		]
 	});
 		
 	//construct UI
