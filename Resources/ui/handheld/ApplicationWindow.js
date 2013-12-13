@@ -5,9 +5,11 @@ function ApplicationWindow() {
 		
 	//create component instance
 	var self = Ti.UI.createWindow({
-		backgroundColor:'#ffffff'
+		backgroundColor:'#ffffff',
+		fullscreen:false,
+		exitOnClose:true		
 	});
-		
+
 	//construct UI
 	var firstView = new FirstView();
 	self.add(firstView);

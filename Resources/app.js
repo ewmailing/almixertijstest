@@ -230,6 +230,18 @@ win.add(volume_slider);
 win.add(pitch_slider);
 win.open();
 
+/* It is recommended that you setup the remaining event listeners for the window after 
+ * it is opened on Android, so wait for it to open via event listener,
+ * otherwise window.getActivity returns null.
+ * Also note that the window MUST be a heavyweight window (e.g. using fullscreen or navbar settings)
+ * otherwise, there will be no event listener callbacks. (Lightweight windows are gone as of Ti 3.2.0.GA)
+ */
+win.addEventListener('open', 
+	function()
+	{
+		SetupApplicationLifeCycleHandlers(win);
+	}
+);
 
 
 /* You should copy all the event handlers below into your app. 
@@ -237,46 +249,61 @@ win.open();
  * Additionally, when Android exits an app, it calls ALmixer_Quit() which is necessary to make sure
  * the audio system is properly cleaned up, or there could be problems on the next launch.
  */
-if (Ti.Platform.osname == 'android')
+/// @param the_window This variable is required for only Android. It should be you main application window.
+function SetupApplicationLifeCycleHandlers(the_window)
 {
-	Titanium.Android.currentActivity.addEventListener('pause', 
+	var application_reference;
+	if(Ti.Platform.osname == 'android')
+	{
+		// For Android, we don't really have a global application reference. 
+		// So we use the main game window's activity instead.
+		// The window must be opened before we call getActivity()
+		// Titanium.Android.currentActivity isn't good because it can change on you.
+		application_reference = the_window.getActivity();
+	}
+	else
+	{
+		application_reference = Titanium.App;
+	}
+
+	application_reference.addEventListener('pause', 
 		function()
 		{
+			Ti.API.info("pause called");
+ 			ALmixer.BeginInterruption();
+		}
+	);
+	
+	// onuserleavehint was introduced in Ti 3.2.0.GA to better handle Android events.
+	// You need 3.2.0.GA for this to have any effect, but it is safe to run this on older versions because it will be a no-op.
+	application_reference.addEventListener('onuserleavehint', 
+		function()
+		{
+			Ti.API.info("onuserleavehint called");
  			ALmixer.BeginInterruption();
 		}
 	);
 
-	Titanium.Android.currentActivity.addEventListener('resume', 
+
+	// I think this is triggered when resuming Titanium phone call interruptions.	
+	application_reference.addEventListener('resume', 
 		function()
 		{
+			Ti.API.info("resume called");
 			ALmixer.EndInterruption();
 		}
 	);
 
-	Titanium.Android.currentActivity.addEventListener('destroy', 
+	// I think this is triggered for resuming all other paused events.
+	application_reference.addEventListener('resumed', 
 		function()
 		{
-			Ti.API.info("exit called");
-			ALmixer.Quit();
-		}
-	);
-
-}
-else
-{
-	Titanium.App.addEventListener('pause', 
-		function()
-		{
-	 		ALmixer.BeginInterruption();
-		}
-	);
-
-	Titanium.App.addEventListener('resume', 
-		function()
-		{
+			Ti.API.info("resumed called");
 			ALmixer.EndInterruption();
 		}
 	);
+
 }
+
 
 })();
